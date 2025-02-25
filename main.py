@@ -16,7 +16,7 @@ app = FastAPI()
 # ✅ Enable CORS for frontend communication
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  
+    allow_origins=["https://snehatakkar.github.io/AI-powered-IDE/"],  
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
