@@ -6,7 +6,7 @@ requests==2.31.0
 python-dotenv==1.0.1  # For loading environment variables
 
 # Frontend dependencies
-monaco-editor-react==4.4.6  # Ensure proper integration with Monaco Editor
+
 axios==1.6.2  # For making API requests from React
 
 # Optional (if using a virtual environment)
