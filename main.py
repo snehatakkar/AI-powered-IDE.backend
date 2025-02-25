@@ -13,14 +13,14 @@ if not HUGGINGFACE_API_KEY:
 
 app = FastAPI()
 
-# ✅ Enable CORS for frontend communication
+
 # ✅ Allow CORS for frontend requests
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["https://snehatakkar.github.io/AI-powered-IDE/"],  
-    allow_origins=["*"],  # Change this to your frontend URL
+    
     allow_credentials=True,
-    allow_methods=["*"],
+   
     allow_methods=["*"],  # ✅ Allow all HTTP methods (POST, GET, etc.)
     allow_headers=["*"],
 )
@@ -76,8 +76,7 @@ async def analyze_code(request: CodeRequest):
     ai_suggestions = get_ai_suggestions(request.code)
     
     return {"syntax_check": syntax_check, "ai_suggestions": ai_suggestions}
-    return {"message": "✅ POST request received!", "code": request.code}
-
+    
 # ✅ Root endpoint to verify FastAPI is running
 # ✅ Root endpoint to check if the server is running
 @app.get("/")
