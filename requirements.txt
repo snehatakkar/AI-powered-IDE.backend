@@ -1,0 +1,13 @@
+# Backend dependencies
+fastapi==0.110.0
+uvicorn==0.29.0
+pydantic==2.6.4
+requests==2.31.0
+python-dotenv==1.0.1  # For loading environment variables
+
+# Frontend dependencies
+monaco-editor-react==4.4.6  # Ensure proper integration with Monaco Editor
+axios==1.6.2  # For making API requests from React
+
+# Optional (if using a virtual environment)
+watchfiles==0.21.0  # Improves FastAPI reloading
