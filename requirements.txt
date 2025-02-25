@@ -7,7 +7,6 @@ python-dotenv==1.0.1  # For loading environment variables
 
 # Frontend dependencies
 
-axios==1.6.2  # For making API requests from React
 
 # Optional (if using a virtual environment)
 watchfiles==0.21.0  # Improves FastAPI reloading
