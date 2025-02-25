@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import os
 
-# ✅ Ensure the API key is set correctly
+# ✅ Load Hugging Face API key from environment variable
 HUGGINGFACE_API_KEY = os.getenv("HUGGINGFACE_API_KEY")
 
 if not HUGGINGFACE_API_KEY:
@@ -13,20 +13,16 @@ if not HUGGINGFACE_API_KEY:
 
 app = FastAPI()
 
-
-# ✅ Allow CORS for frontend requests
+# ✅ Configure CORS to allow frontend requests
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://snehatakkar.github.io/AI-powered-IDE/"],  
-    
+    allow_origins=["https://snehatakkar.github.io", "http://localhost:3000"],  # Add your frontend URLs
     allow_credentials=True,
-   
-    allow_methods=["*"],  # ✅ Allow all HTTP methods (POST, GET, etc.)
+    allow_methods=["*"],  # Allow all HTTP methods (POST, GET, etc.)
     allow_headers=["*"],
 )
 
-# ✅ Define input model
-# ✅ Define the request model
+# ✅ Define request model
 class CodeRequest(BaseModel):
     code: str
 
@@ -38,7 +34,7 @@ def analyze_python_code(code: str):
     except SyntaxError as e:
         return f"❌ Syntax Error: {e.msg} at line {e.lineno}, column {e.offset}"
 
-# ✅ Function to get AI code suggestions from Hugging Face
+# ✅ Function to get AI suggestions from Hugging Face
 def get_ai_suggestions(code: str):
     if not HUGGINGFACE_API_KEY:
         return "❌ AI suggestions unavailable: API key not set."
@@ -49,36 +45,35 @@ def get_ai_suggestions(code: str):
     }
     payload = {"inputs": f"Improve this Python code:\n{code}"}
 
-    response = requests.post(
-        "https://api-inference.huggingface.co/models/bigcode/starcoder",
-        headers=headers,
-        json=payload
-    )
+    try:
+        response = requests.post(
+            "https://api-inference.huggingface.co/models/bigcode/starcoder",
+            headers=headers,
+            json=payload
+        )
 
-    # ✅ Debugging logs
-    print(f"🔹 API Response Status: {response.status_code}")  
-    print(f"🔹 API Response Data: {response.text}")
+        # ✅ Debugging logs for API response
+        print(f"🔹 API Response Status: {response.status_code}")  
+        print(f"🔹 API Response Data: {response.text}")
 
-    if response.status_code == 200:
-        try:
+        if response.status_code == 200:
             ai_response = response.json()
             return ai_response[0].get("generated_text", "No suggestion provided.")
-        except (IndexError, KeyError, ValueError):
-            return "⚠️ AI suggestion response format error."
-    else:
-        return f"❌ AI suggestion failed: {response.text}"
+        else:
+            return f"❌ AI suggestion failed: {response.text}"
 
-# ✅ Endpoint for Syntax Check & AI Suggestion
-# ✅ This endpoint should only accept POST requests
+    except requests.exceptions.RequestException as e:
+        return f"❌ AI request error: {str(e)}"
+
+# ✅ API Endpoint for Syntax Check & AI Suggestion
 @app.post("/analyze-code")
 async def analyze_code(request: CodeRequest):
     syntax_check = analyze_python_code(request.code)
     ai_suggestions = get_ai_suggestions(request.code)
     
     return {"syntax_check": syntax_check, "ai_suggestions": ai_suggestions}
-    
+
 # ✅ Root endpoint to verify FastAPI is running
-# ✅ Root endpoint to check if the server is running
 @app.get("/")
 async def root():
     return {"message": "🚀 AI Code Suggestion Backend is Running!"}
